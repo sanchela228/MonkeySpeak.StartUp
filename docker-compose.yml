@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  webservice:
+    build:
+      context: .
+      dockerfile: ./docker/webservice/Dockerfile
+    ports:
+      - "5000:80"
+      - "5001:443"
+    volumes:
+      - .:/src
+      - ~/.nuget:/root/.nuget
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80;https://+:443
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=1234
+      - ConnectionStrings__DefaultConnection=Server=db;Database=myappdb;User Id=postgres;Password=postgres;
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: postgres:latest
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d myappdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: myappdb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
