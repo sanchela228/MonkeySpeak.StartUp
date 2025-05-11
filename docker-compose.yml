@@ -15,7 +15,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80;https://+:443
       - ASPNETCORE_Kestrel__Certificates__Default__Password=1234
-      - ConnectionStrings__DefaultConnection=Server=db;Database=myappdb;User Id=postgres;Password=postgres;
+      - ConnectionStrings__DefaultConnection=Server=db;Database=monkeyspeak;User Id=postgres;Password=postgres;
     depends_on:
       db:
         condition: service_healthy
@@ -24,16 +24,16 @@ services:
   db:
     image: postgres:latest
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d myappdb"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d monkeyspeak"]
       interval: 5s
       timeout: 5s
       retries: 10
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: myappdb
+      POSTGRES_DB: monkeyspeak
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     restart: unless-stopped
