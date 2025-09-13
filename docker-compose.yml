@@ -48,6 +48,21 @@ services:
     restart: unless-stopped
     networks:
       - network2
+  migrations:
+    build:
+      args:
+        - REMOTE_GIT_LINK_BACKEND=${REMOTE_GIT_LINK_BACKEND}
+        - ConnectionStrings__DefaultConnection=Host=${POSTGRES_SERVER};Port=${POSTGRES_PORT};Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+      context: .
+      dockerfile: ./docker/webservice/Dockerfile
+    command: ["dotnet", "ef", "database", "update"]
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=${POSTGRES_SERVER};Port=${POSTGRES_PORT};Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - network2
 
 volumes:
   postgres_data:

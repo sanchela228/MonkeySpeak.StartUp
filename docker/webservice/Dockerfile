@@ -21,7 +21,7 @@ RUN git clone ${REMOTE_GIT_LINK_BACKEND} ./backend
 
 WORKDIR /src/backend
 
-RUN dotnet ef database update
+#RUN dotnet ef database update
 
 RUN dotnet restore
 
@@ -30,6 +30,9 @@ RUN dotnet dev-certs https
 
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 WORKDIR /app
+
+COPY --from=build /root/.dotnet/tools /root/.dotnet/tools
+ENV PATH="${PATH}:/root/.dotnet/tools"
 
 COPY --from=build /app .
 ENTRYPOINT ["dotnet", "monkeyspeakbackend.dll"]
