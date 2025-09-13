@@ -21,6 +21,8 @@ RUN git clone ${REMOTE_GIT_LINK_BACKEND} ./backend
 
 WORKDIR /src/backend
 
+RUN dotnet ef database update
+
 RUN dotnet restore
 
 RUN dotnet publish -c Release -o /app
